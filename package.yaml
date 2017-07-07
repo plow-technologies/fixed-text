@@ -1,5 +1,5 @@
 name: fixed-text
-version: '0.0.0'
+version: '0.0.1'
 author: Scott Murphy <scottmurphy09@gmail.com>
 maintainer: Scott Murphy <scottmurphy09@gmail.com>
 license: BSD3
@@ -9,6 +9,11 @@ extra-source-files:
 - ChangeLog.md
 dependencies:
   - base >=4 && <5
+  - regex-base
+  - regex-tdfa
+  - lens-regex
+  - regex-posix
+  - text
   - lens
 library:
   source-dirs: src
@@ -16,7 +21,6 @@ library:
   exposed-modules:
   - Data.FixedText
   - Data.FixedText.Internal
-
 executables:
   fixed-text:
     main: Main.hs

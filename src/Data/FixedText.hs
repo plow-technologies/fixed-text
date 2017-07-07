@@ -18,7 +18,12 @@ characters that are known at compile time.
 | -}
 
 
-module Data.FixedText  where
+module Data.FixedText ( FixedText
+                      , FixedTextErrors
+                      , fixedTextFromString
+                      , fixedTextToString
+                      , fixedTextFromText
+                      , fixedTextToText) where
 
 
 
@@ -27,14 +32,14 @@ import qualified Data.Text as Text
 import Data.Proxy (Proxy(..))
 
 import GHC.TypeLits (Nat,natVal,KnownNat,Symbol,KnownSymbol,symbolVal)
-import Data.Monoid
+
+import Data.Semigroup
 import Text.Regex.Lens
 import Text.Regex.Base
 import Text.Regex.Posix
 import Control.Lens
-import Test.QuickCheck (Arbitrary(..))
-import qualified Test.QuickCheck as QuickCheck
-import qualified Regex.Genex as Genex
+import Data.String (IsString(..))
+
 
 
 
@@ -53,9 +58,17 @@ newtype  FixedText (lengthMax :: Nat)
                    (lengthMin :: Nat)
                    (regex     :: Symbol) 
            = FixedText { _unFixedText :: Text}
-  deriving (Show,Ord,Eq)
+  deriving (Ord,Eq)
 
+instance Show (FixedText max min num) where
+  show = fixedTextToString
 
+instance ( KnownNat    max
+         , KnownNat    min
+         , KnownSymbol regex) => IsString (FixedText (max::Nat ) (min::Nat) (regex::Symbol)) where
+  fromString str =  case fixedTextFromString str of
+               Left f          -> error (show f)
+               Right fixedText -> fixedText
 
 -- | String version of the Smart Constructor
 fixedTextFromString :: forall max min regex . 
@@ -103,22 +116,6 @@ notValidRegex regexStr txt =  regexPart /= txt
 
 
 
--- | A few examples to make sure everything works right...
--- Working input
-exampleFixedText  :: Either FixedTextErrors (FixedText 30 0 "[[:alnum:]]")
-exampleFixedText = fixedTextFromString "exampleText1234" 
-
--- | Cut off too much input.
-exampleOverFlowProtection :: Either FixedTextErrors (FixedText 10 1 "[[:alnum:]]")
-exampleOverFlowProtection = fixedTextFromString "exampleText1234" 
-
--- | Reject if below min input
-exampleUnderFlowProtection :: Either FixedTextErrors (FixedText 200 20 "[[:alnum:]]")
-exampleUnderFlowProtection = fixedTextFromString "exampleText1234"
-
--- | Reject if invalid char
-exampleInvalidChar :: Either FixedTextErrors (FixedText 30 1 "[[:digit:]]")
-exampleInvalidChar = fixedTextFromString "exampleNotAllDigits"
 
 
 -- | Instances to define
@@ -140,21 +137,23 @@ instance ( KnownNat max
 
 
 
-
--- | Arbitrary instance
--- This arbitrary instance takes advantage of the Monoid defined above
-instance ( KnownNat     max
-         , KnownSymbol  regex) => 
-  Arbitrary (FixedText max 0 regex) where
-
-    arbitrary = let regexStr        = symbolVal (Proxy :: Proxy regex)        
-                    generatedString = Genex.genexPure [regexStr]
-
-                 in either (const mempty) id <$>
-                            QuickCheck.elements
-                              (fixedTextFromString <$>
-                                         generatedString)
+instance ( KnownNat max
+         , KnownNat min
+         , KnownSymbol regex) =>  Semigroup (FixedText (max::Nat) (min::Nat) (regex::Symbol)) where
+  (<>) s1@(FixedText str1)
+                 (FixedText str2) = either (const s1)
+                                            id
+                                            (fixedTextFromText (str1 <> str2))
 
 
 
 
+
+
+fixedTextToText :: FixedText max min regex -> Text
+fixedTextToText (FixedText txt) = txt
+
+
+
+fixedTextToString :: FixedText max min regex -> String
+fixedTextToString (FixedText txt) = Text.unpack txt

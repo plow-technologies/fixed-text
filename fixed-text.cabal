@@ -1,64 +1,86 @@
-Name:                   fixed-text
-Version:                0.0.0
-Author:                 Scott Murphy <scottmurphy09@gmail.com>
-Maintainer:             Scott Murphy <scottmurphy09@gmail.com>
-License:                BSD3
-License-File:           LICENSE
--- Synopsis:               
--- Description:            
-Cabal-Version:          >= 1.10
-Build-Type:             Simple
-Extra-Source-Files:     README.md, ChangeLog.md
+-- This file has been generated from package.yaml by hpack version 0.17.0.
+--
+-- see: https://github.com/sol/hpack
 
-Library
-  Default-Language:     Haskell2010
-  HS-Source-Dirs:       src
-  GHC-Options:          -Wall
-  Exposed-Modules:      Data.FixedText
-                        Data.FixedText.Internal
---  Other-Modules:        
-  Build-Depends:        base >= 4 && < 5
--- Test Suite Code
-                      , lens
-                      , regex-genex
-                      , tasty                      
-                      , tasty-golden
-                      , tasty-hunit
-                      , tasty-quickcheck
-                      , QuickCheck
+name:                   fixed-text
+version:                0.0.1
+author:                 Scott Murphy <scottmurphy09@gmail.com>
+maintainer:             Scott Murphy <scottmurphy09@gmail.com>
+license:                BSD3
+license-file:           LICENSE
+build-type:             Simple
+cabal-version:          >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base >=4 && <5
+    , regex-base
+    , regex-tdfa
+    , lens-regex
+    , regex-posix
+    , text
+    , lens
+  exposed-modules:
+      Data.FixedText
+      Data.FixedText.Internal
+  other-modules:
+      Main
+      Paths_fixed_text
+  default-language: Haskell2010
 
 executable fixed-text
-  Default-Language:     Haskell2010
-  HS-Source-Dirs:       src
-  GHC-Options:          -Wall
-  main-is:              Main.hs
-  Build-Depends:        base >= 4 && < 5
-                      , fixed-text
--- Test Suite Code
-                      , lens
-                      , regex-genex
-                      , tasty                      
-                      , tasty-golden
-                      , tasty-hunit
-                      , tasty-quickcheck
-                      , QuickCheck
+  main-is: Main.hs
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -threaded -O2
+  build-depends:
+      base >=4 && <5
+    , regex-base
+    , regex-tdfa
+    , lens-regex
+    , regex-posix
+    , text
+    , lens
+    , optparse-generic
+  other-modules:
+      Data.FixedText
+      Data.FixedText.Internal
+  default-language: Haskell2010
 
-Test-Suite spec
-  Type:                 exitcode-stdio-1.0
-  Default-Language:     Haskell2010
-  Hs-Source-Dirs:       src
-                      , test
-  Ghc-Options:          -Wall
-  Main-Is:              Spec.hs
-  Build-Depends:        base
-                      , regex-genex
-                      , tasty                      
-                      , tasty-golden
-                      , tasty-hunit
-                      , tasty-quickcheck
-                      , QuickCheck
-                      
-
-Source-Repository head
-  Type:                 git
---  Location:             
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      src
+      test
+  ghc-options: -Wall -threaded
+  build-depends:
+      base >=4 && <5
+    , regex-base
+    , regex-tdfa
+    , lens-regex
+    , regex-posix
+    , text
+    , lens
+    , regex-genex
+    , tasty
+    , tasty-golden
+    , tasty-hunit
+    , tasty-quickcheck
+    , QuickCheck
+  other-modules:
+      Data.FixedText
+      Data.FixedText.Internal
+      Main
+      Data.FixedTextSpec
+  default-language: Haskell2010
