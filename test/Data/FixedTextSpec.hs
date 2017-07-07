@@ -15,7 +15,7 @@ import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 import Test.Tasty.HUnit
 import Data.List
-
+import Data.Either
 
 import Data.Proxy (Proxy(..))
 
@@ -24,31 +24,14 @@ import qualified Regex.Genex as Genex
 
 
 tests :: TestTree
-tests = testGroup "Tests" [properties, unitTests]
+tests = testGroup "Tests" [unitTests]
 
-properties :: TestTree
-properties = testGroup "Properties" [qcProps]
-
-qcProps :: TestTree
-qcProps = testGroup "(checked by QuickCheck)"
-  [ QC.testProperty "sort == sort . reverse" (
-      \list -> sort (list :: [Int]) == sort (reverse list))
-  , QC.testProperty "Fermat's little theorem" (
-      \x -> ((x :: Integer)^7 - x) `mod` 7 == 0)
-  -- the following property does not hold
-  , QC.testProperty "Fermat's last theorem" (
-      \x y z n ->
-        (n :: Integer) >= 3 QC.==> x^n + y^n /= (z^n :: Integer))
-  ]
 
 unitTests :: TestTree
 unitTests = testGroup "Unit tests"
-  [ testCase "List comparison (different length)" (
-      [1, 2, 3] `compare` [1,2] @?= GT)
+  [ testCase "Test: exampleText1234"          ((fixedTextToString <$>  exampleFixedText) `compare` (Right "exampleText1234") @?= EQ)
+  , testCase "Test: exampleText1234 Literal"  ((fixedTextToString     exampleFixedText') `compare`         "exampleText1234" @?= EQ)
 
-  -- the following test does not hold
-  , testCase "List comparison (same length)" (
-      [1, 2, 3] `compare` [1,2,2] @?= LT)
   ]
 
 
@@ -73,6 +56,9 @@ instance ( KnownNat     max
 exampleFixedText  :: Either FixedTextErrors (FixedText 30 0 "[[:alnum:]]")
 exampleFixedText = fixedTextFromString "exampleText1234" 
 
+exampleFixedText'  :: (FixedText 30 0 "[[:alnum:]]")
+exampleFixedText' = "exampleText1234" 
+
 -- | Cut off too much input.
 exampleOverFlowProtection :: Either FixedTextErrors (FixedText 10 1 "[[:alnum:]]")
 exampleOverFlowProtection = fixedTextFromString "exampleText1234" 
@@ -84,3 +70,8 @@ exampleUnderFlowProtection = fixedTextFromString "exampleText1234"
 -- | Reject if invalid char
 exampleInvalidChar :: Either FixedTextErrors (FixedText 30 1 "[[:digit:]]")
 exampleInvalidChar = fixedTextFromString "exampleNotAllDigits"
+
+
+type StandardFixedText = (FixedText 140 0 "[[:alnum:]]")
+
+
