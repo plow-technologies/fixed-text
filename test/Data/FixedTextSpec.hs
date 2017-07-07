@@ -1,4 +1,4 @@
-{-# LANGUAGE KindSignatures #-}
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RankNTypes #-}

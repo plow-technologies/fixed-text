@@ -83,5 +83,4 @@ test-suite spec
       Data.FixedText.Internal
       Main
       Data.FixedTextSpec
-      Data.FixedTextSpec_flymake
   default-language: Haskell2010
